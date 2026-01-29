@@ -27,8 +27,8 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("", response_model=List[UserResponse])
-def get_users():
-    pass
+def get_users(db: Session = Depends(get_db)):
+    return db.query(User).all()
 
 
 @router.get("/{user_id}", response_model=UserResponse)
