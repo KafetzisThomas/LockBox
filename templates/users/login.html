@@ -11,35 +11,51 @@
 
         <button type="submit">Log In</button>
     </form>
-    <p id="message" style="color: red;"></p>
+    <p id="message"></p>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const msg = document.getElementById('message');
+            msg.innerText = "Getting salt...";
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const msg = document.getElementById('message');
-
-            msg.innerText = "Checking user...";
 
             try {
+                // get salt and wrapped key from api
                 const response = await fetch(`/api/users?email=${email}`);
                 const users = await response.json();
 
                 if (users.length === 0) {
-                    msg.innerText = "User not found.";
+                    msg.innerText = "User not found";
                     return;
                 }
-
                 const user = users[0];
 
-                // TODO: verify the hash matches the password
+                msg.innerText = "Deriving keys...";
 
-                alert("User Found: ID: " + user.id + "\nSalt: " + user.kdf_salt);
+                // convert hex back to buffer
+                const saltBuffer = fromHex(user.kdf_salt);
 
-                sessionStorage.setItem('user_id', user.id);
-                sessionStorage.setItem('user_email', user.email);
+                const passwordKey = await deriveKeyFromPassword(password, saltBuffer);
 
+                // verify auth hash
+                const calculatedHash = await deriveAuthHash(passwordKey);
+                if (calculatedHash !== user.auth_hash) {
+                    throw new Error("Incorrect password");
+                }
+
+                msg.innerText = "Decrypting vault...";
+
+                const vaultKey = await unwrapVaultKey(user.wrapped_key, passwordKey);
+
+                const exportedKey = await window.crypto.subtle.exportKey("jwk", vaultKey);
+                
+                sessionStorage.setItem("vault_key", JSON.stringify(exportedKey));
+                sessionStorage.setItem("user_id", user.id);
+                
+                alert("Login successful, vault key unlocked");
                 window.location.href = "/";
 
             } catch (err) {

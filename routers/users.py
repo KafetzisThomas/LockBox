@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from schemas import UserCreate, UserResponse, UserUpdate
 from models import User
 from database import get_db
@@ -27,8 +27,12 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("", response_model=List[UserResponse])
-def get_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
+def get_users(email: Optional[str] = None, db: Session = Depends(get_db)):
+    query = db.query(User)
+    if email:
+        query = query.filter(User.email == email)
+
+    return query.all()
 
 
 @router.get("/{user_id}", response_model=UserResponse)

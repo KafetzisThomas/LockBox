@@ -21,6 +21,7 @@ class UserUpdate(UserBase):
 
 class UserResponse(UserBase):
     id: int
+    auth_hash: str
     kdf_salt: str
     wrapped_key: str
 

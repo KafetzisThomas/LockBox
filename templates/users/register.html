@@ -11,26 +11,31 @@
 
         <button type="submit">Sign Up</button>
     </form>
-    <p id="message" style="color: red;"></p>
+    <p id="message"></p>
 
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const msg = document.getElementById('message');
+            msg.innerText = "Generating encryption keys...";
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const msg = document.getElementById('message');
-
-            msg.innerText = "Creating account...";
-
-            // temporary dummy data to test the api connection
-            const payload = {
-                email: email,
-                auth_hash: "dummy_hash" + password,
-                kdf_salt: "dummy_salt",
-                wrapped_key: "dummy_wrapped_key"
-            };
 
             try {
+                const salt = generateSalt();
+                const passwordKey = await deriveKeyFromPassword(password, salt);
+                const vaultKey = await generateVaultKey();
+                const wrappedKeyHex = await wrapVaultKey(vaultKey, passwordKey);
+                const authHashHex = await deriveAuthHash(passwordKey);
+
+                const payload = {
+                    email: email,
+                    auth_hash: authHashHex,
+                    kdf_salt: toHex(salt),
+                    wrapped_key: wrappedKeyHex
+                };
+
                 const response = await fetch('/api/users', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
