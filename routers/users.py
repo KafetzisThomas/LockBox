@@ -40,8 +40,24 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{user_id}", response_model=UserResponse)
-def update_user(user_id: int, user: UserUpdate):
-    pass
+def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    if user_update.email is not None and user_update.email != user.email:
+        existing_email = db.query(User).filter(User.email == user_update.email).first()
+        if existing_email:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+
+    update_data = user_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(user, key, value)
+
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 @router.delete("/{user_id}")
