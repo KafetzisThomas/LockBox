@@ -26,8 +26,19 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
 
 
 @router.patch("/{item_id}", response_model=ItemResponse)
-def update_item(item_id: int, item: ItemUpdate):
-    pass
+def update_item(item_id: int, item_update: ItemUpdate, user_id: int, db: Session = Depends(get_db)):
+    db_item = db.query(Item).filter(Item.id == item_id, Item.user_id == user_id).first()
+    if not db_item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+
+    update_data = item_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_item, key, value)
+
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
 
 @router.delete("/{item_id}")
