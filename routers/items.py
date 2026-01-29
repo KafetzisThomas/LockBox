@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from schemas import ItemResponse, ItemCreate, ItemUpdate
 from models import Item
@@ -31,5 +31,11 @@ def update_item(item_id: int, item: ItemUpdate):
 
 
 @router.delete("/{item_id}")
-def delete_item(item_id: int):
-    pass
+def delete_item(item_id: int, user_id: int, db: Session = Depends(get_db)):
+    item = db.query(Item).filter(Item.id == item_id, Item.user_id == user_id).first()
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+
+    db.delete(item)
+    db.commit()
+    return {"status": "deleted", "id": item_id}
