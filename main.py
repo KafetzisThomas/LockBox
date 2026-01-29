@@ -1,14 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
 from database import Base, engine
 from routers import items, users
 
+# create tables automatically
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
 
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(items.router, prefix="/api/items", tags=["Items"])
 
-# create tables automatically
-Base.metadata.create_all(bind=engine)
 
 @app.get("/", include_in_schema=False)
 @app.get("/vault", include_in_schema=False)
@@ -17,13 +21,14 @@ def vault():
 
 
 @app.get("/login", include_in_schema=False)
-def login_page():
-    pass
+def login_page(request: Request):
+    return templates.TemplateResponse("users/login.html", {"request": request})
 
 
 @app.get("/register", include_in_schema=False)
-def register_page():
-    pass
+def register_page(request: Request):
+    return templates.TemplateResponse("users/register.html", {"request": request})
+
 
 @app.get("/logout", include_in_schema=False)
 def logout_page():

@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>Login</h2>
+    <form id="loginForm">
+        <label>Email:</label><br>
+        <input type="email" id="email" required><br><br>
+
+        <label>Master Password:</label><br>
+        <input type="password" id="password" required><br><br>
+
+        <button type="submit">Log In</button>
+    </form>
+    <p id="message" style="color: red;"></p>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('message');
+
+            msg.innerText = "Checking user...";
+
+            try {
+                const response = await fetch(`/api/users?email=${email}`);
+                const users = await response.json();
+
+                if (users.length === 0) {
+                    msg.innerText = "User not found.";
+                    return;
+                }
+
+                const user = users[0];
+
+                // TODO: verify the hash matches the password
+
+                alert("User Found: ID: " + user.id + "\nSalt: " + user.kdf_salt);
+
+                sessionStorage.setItem('user_id', user.id);
+                sessionStorage.setItem('user_email', user.email);
+
+                window.location.href = "/";
+
+            } catch (err) {
+                msg.innerText = "Error: " + err;
+            }
+        });
+    </script>
+{% endblock content %}

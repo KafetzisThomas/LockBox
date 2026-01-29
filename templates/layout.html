@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lockbox</title>
+</head>
+<body>
+    <nav>
+        <a href="#">Home</a> | 
+        <a href="#">Login</a> | 
+        <a href="#">Register</a>
+    </nav>
+    <hr>
+
+    {% block content %}
+    {% endblock content %}
+
+    <script>
+        // temporary function to check if we are logged in
+        function checkLogin() {
+            const user = sessionStorage.getItem('user_email');
+            if (user) {
+                console.log("Logged in as: " + user);
+            }
+        }
+        checkLogin();
+    </script>
+</body>
+</html>

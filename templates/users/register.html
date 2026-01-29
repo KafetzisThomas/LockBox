@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>Register</h2>
+    <form id="registerForm">
+        <label>Email:</label><br>
+        <input type="email" id="email" required><br><br>
+
+        <label>Master Password:</label><br>
+        <input type="password" id="password" required><br><br>
+
+        <button type="submit">Sign Up</button>
+    </form>
+    <p id="message" style="color: red;"></p>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('message');
+
+            msg.innerText = "Creating account...";
+
+            // temporary dummy data to test the api connection
+            const payload = {
+                email: email,
+                auth_hash: "dummy_hash" + password,
+                kdf_salt: "dummy_salt",
+                wrapped_key: "dummy_wrapped_key"
+            };
+
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert("Registration Successful!");
+                    window.location.href = "/login";
+                } else {
+                    const errorData = await response.json();
+                    msg.innerText = "Error: " + errorData.detail;
+                }
+            } catch (err) {
+                msg.innerText = "Network Error: " + err;
+            }
+        });
+    </script>
+{% endblock content %}
