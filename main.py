@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from database import Base, engine
 from routers import items, users
 
 app = FastAPI()
@@ -6,6 +7,8 @@ app = FastAPI()
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(items.router, prefix="/api/items", tags=["Items"])
 
+# create tables automatically
+Base.metadata.create_all(bind=engine)
 
 @app.get("/", include_in_schema=False)
 @app.get("/vault", include_in_schema=False)
