@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from schemas import ItemResponse, ItemCreate, ItemUpdate
 from models import Item
@@ -12,9 +12,17 @@ def get_items(user_id: int, db: Session = Depends(get_db)):
     return db.query(Item).filter(Item.user_id == user_id).all()
 
 
-@router.post("", response_model=ItemResponse)
-def create_item(item: ItemCreate):
-    pass
+@router.post("", response_model=ItemResponse, status_code=status.HTTP_201_CREATED)
+def create_item(item: ItemCreate, db: Session = Depends(get_db)):
+    db_item = Item(
+        name=item.name,
+        encrypted_content=item.encrypted_content,
+        user_id=item.user_id
+    )
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
 
 @router.patch("/{item_id}", response_model=ItemResponse)
