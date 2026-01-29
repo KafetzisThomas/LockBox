@@ -1,12 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 from schemas import ItemResponse, ItemCreate, ItemUpdate
+from models import Item
+from database import get_db
 
 router = APIRouter()
 
 
 @router.get("", response_model=list[ItemResponse])
-def get_items():
-    pass
+def get_items(user_id: int, db: Session = Depends(get_db)):
+    return db.query(Item).filter(Item.user_id == user_id).all()
 
 
 @router.post("", response_model=ItemResponse)
