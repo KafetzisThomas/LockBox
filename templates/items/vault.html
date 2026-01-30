@@ -1,0 +1,150 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>My Vault</h2>
+    <div style="margin-bottom: 20px;">
+        <button onclick="document.getElementById('createModal').showModal()">Add New Item</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+    <hr>
+
+    <h3>Saved Items</h3>
+    <p id="loading">Loading vault...</p>
+    <ul id="vaultList"></ul>
+
+    <dialog id="createModal" style="padding: 20px; border: 1px solid #333;">
+        <h3>Add New Item</h3>
+        <form id="createForm" method="dialog">
+            <label>Name:</label><br>
+            <input type="text" id="newName" required><br><br>
+
+            <label>Password / Secret:</label><br>
+            <input type="text" id="newContent" required><br><br>
+
+            <button type="submit" value="save">Save</button>
+            <button type="button" onclick="document.getElementById('createModal').close()">Cancel</button>
+        </form>
+    </dialog>
+
+    <dialog id="editModal" style="padding: 20px; border: 1px solid #333;">
+        <h3>Edit Item</h3>
+        <form id="editForm" method="dialog">
+            <input type="hidden" id="editId">
+
+            <label>Name:</label><br>
+            <input type="text" id="editName"><br><br>
+
+            <label>Password / Secret (leave blank to keep current):</label><br>
+            <input type="text" id="editContent" placeholder="(Hidden)"><br><br>
+
+            <button type="submit" value="save">Update</button>
+            <button type="button" onclick="document.getElementById('editModal').close()">Cancel</button>
+        </form>
+    </dialog>
+
+    <script>
+        const userId = sessionStorage.getItem('user_id');
+        const vaultKeyJson = sessionStorage.getItem('vault_key');
+
+        if (!userId) {
+            window.location.href = "/login";
+        }
+
+        async function loadItems() {
+            const list = document.getElementById('vaultList');
+            const loading = document.getElementById('loading');
+            
+            try {
+                const res = await fetch(`/api/items?user_id=${userId}`);
+                const items = await res.json();
+
+                loading.style.display = 'none';
+                list.innerHTML = "";
+
+                if (items.length === 0) {
+                    list.innerHTML = "<li>No items yet.</li>";
+                    return;
+                }
+
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.style.marginBottom = "10px";
+
+                    // TODO: decrypt encrypted content
+                    li.innerHTML = `
+                        <strong>${item.name}</strong> 
+                        <button onclick='openEditModal(${JSON.stringify(item)})'>Edit</button>
+                        <button onclick="deleteItem(${item.id})">Delete</button>
+                        <br>
+                        <small>Data: ${item.encrypted_content}</small>
+                    `;
+                    list.appendChild(li);
+                });
+
+            } catch (err) {
+                loading.innerText = "Error: " + err;
+            }
+        }
+
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            const name = document.getElementById('newName').value;
+            const content = document.getElementById('newContent').value;
+
+            // TODO: placeholder for encryption
+            const fakeEncrypt = "ENC_" + content;
+
+            await fetch('/api/items', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name,
+                    encrypted_content: fakeEncrypt,
+                    user_id: parseInt(userId)
+                })
+            });
+            document.getElementById('newName').value = "";
+            document.getElementById('newContent').value = "";
+            loadItems();
+        });
+
+        function openEditModal(item) {
+            document.getElementById('editId').value = item.id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editContent').value = "";
+            document.getElementById('editModal').showModal();
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            const id = document.getElementById('editId').value;
+            const name = document.getElementById('editName').value;
+            const content = document.getElementById('editContent').value;
+            const payload = {name: name};
+
+            if (content) {
+                // TODO: placeholder for encryption
+                payload.encrypted_content = "ENC_" + content;
+            }
+
+            await fetch(`/api/items/${id}?user_id=${userId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            loadItems();
+        });
+
+        async function deleteItem(id) {
+            if(!confirm("Delete this item?")) return;
+            await fetch(`/api/items/${id}?user_id=${userId}`, { method: 'DELETE' });
+            loadItems();
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = "/login";
+        }
+
+        loadItems();
+    </script>
+{% endblock content %}
