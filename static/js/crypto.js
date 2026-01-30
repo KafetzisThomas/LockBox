@@ -66,3 +66,31 @@ async function deriveAuthHash(passwordKey) {
     const hashBuffer = await window.crypto.subtle.digest("SHA-256", exportedKey);
     return toHex(hashBuffer);
 }
+
+// import key from jwk session
+async function importVaultKey(jwkObject) {
+    return window.crypto.subtle.importKey("jwk", jwkObject, { name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
+}
+
+async function encryptVaultItem(key, plaintext) {
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const buffer = ENCODING.encode(plaintext);
+
+    const encrypted = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, buffer);
+    const combined = new Uint8Array(iv.length + encrypted.byteLength);
+    combined.set(iv);
+    combined.set(new Uint8Array(encrypted), iv.length);
+    return toHex(combined.buffer);
+}
+
+async function decryptVaultItem(key, hexString) {
+    try {
+        const data = fromHex(hexString);
+        const iv = data.slice(0, 12);
+        const ciphertext = data.slice(12);
+        const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext);
+        return DECODING.decode(decrypted);
+    } catch (e) {
+        throw new Error("Decryption failed", e);
+    }
+}
