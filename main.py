@@ -1,13 +1,20 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from contextlib import asynccontextmanager
 from database import Base, engine
 from routers import items, users
 
-# create tables automatically
-Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    # create tables automatically
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    await engine.dispose()
+
+app = FastAPI(lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
