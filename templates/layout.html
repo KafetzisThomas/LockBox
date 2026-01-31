@@ -3,29 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lockbox - {% block title %}{% endblock title %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
     <script src="/static/js/crypto.js"></script>
-    <title>Lockbox</title>
 </head>
 <body>
-    <nav>
-        <a href="#">Home</a> | 
-        <a href="#">Login</a> | 
-        <a href="#">Register</a>
-    </nav>
-    <hr>
+    <!-- navbar start (for small screens) -->
+    <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body d-lg-none" data-bs-theme="dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for("vault_page") }}">LockBox</a>
 
-    {% block content %}
-    {% endblock content %}
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item auth-user d-none">
+                        <a class="nav-link {% if title == 'My Vault' %}active{% endif %}" href="{{ url_for("vault_page") }}">Vault</a>
+                    </li>
+                    <li class="nav-item auth-user d-none">
+                        <a class="nav-link {% if title == 'Generator' %}active{% endif %}" href="#">Generator</a>
+                    </li>
+                    <li class="nav-item auth-user d-none">
+                        <a class="nav-link {% if title == 'Import Data' %}active{% endif %}" href="#">Import Data</a>
+                    </li>
+                    <li class="nav-item auth-user d-none">
+                        <a class="nav-link {% if title == 'Checkup' %}active{% endif %}" href="#">Checkup</a>
+                    </li>
+                    <li class="nav-item auth-user d-none">
+                        <a class="nav-link {% if title == 'Account' %}active{% endif %}" href="#">Account</a>
+                    </li>
+                    <li class="nav-item auth-guest">
+                        <a class="nav-link {% if title == 'Login' %}active{% endif %}" href="{{ url_for("login_page") }}">Login</a>
+                    </li>
+                    <li class="nav-item auth-guest">
+                        <a class="nav-link {% if title == 'Register' %}active{% endif %}" href="{{ url_for("register_page") }}">Register</a>
+                    </li>
+                    <li class="nav-item auth-user">
+                        <a class="nav-link" aria-current="page" onclick="logout()" href="#">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- navbar end -->
+
+    <!-- sidebar start -->
+    <nav class="sidebar d-none d-lg-flex flex-column flex-shrink-0 p-3 bg-dark vh-100 border-end border-secondary">
+        <a class="d-flex mx-auto mb-3 mb-md-0 text-light text-decoration-none" href="{{ url_for('vault_page') }}">
+            <span class="fs-4 fw-bold">LockBox</span>
+        </a>
+
+        <hr class="border-light">
+
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item auth-user d-none" data-toggle="tooltip" data-placement="bottom" title="Vault">
+                <a class="nav-link text-light {% if title == 'My Vault' %}active{% endif %}" href="{{ url_for('vault_page') }}"><i class="bi bi-safe me-2"></i> Vault</a>
+            </li>
+            <li class="nav-item auth-user d-none">
+                <a class="nav-link text-light" {% if title == 'Generator' %}active{% endif %} href="#"><i class="bi bi-key me-2"></i> Generator</a>
+            </li>
+            <li class="nav-item auth-user d-none">
+                <a class="nav-link text-light" {% if title == 'Import Data' %}active{% endif %} href="#"><i class="bi bi-upload me-2"></i> Import Data</a>
+            </li>
+            <li class="nav-item auth-user d-none">
+                <a class="nav-link text-light" {% if title == 'Checkup' %}active{% endif %} href="#"><i class="bi bi-shield-check me-2"></i> Checkup</a>
+            </li>
+            <li class="nav-item auth-guest">
+                <a class="nav-link text-light {% if title == 'Login' %}active{% endif %}" href="{{ url_for("login_page") }}"><i class="bi bi-door-open"></i> Login</a>
+            </li>
+            <li class="nav-item auth-guest">
+                <a class="nav-link text-light {% if title == 'Register' %}active{% endif %}" href="{{ url_for("register_page") }}"><i class="bi bi-person-add"></i> Register</a>
+            </li>
+        </ul>
+
+        <div class="dropdown dropup">
+            <a href="#" class="d-flex align-items-center text-light text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                <p><i class="bi bi-person-circle fs-5 me-2"></i><span id="userEmailSidebar"></span></p>
+            </a>
+            <hr class="border-light">
+            <ul class="dropdown-menu text-small shadow auth-user d-none">
+                <li>
+                    <a class="dropdown-item" href="#">Account</a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" href="#" onclick="logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="text-secondary small mt-2">
+            <strong>&copy; <script>document.write(new Date().getFullYear());</script> KafetzisThomas</strong>
+        </div>
+    </nav>
+    <!-- sidebar end -->
+
+    <!-- custom content start -->
+    <main role="main" class="container">
+        <div class="row justify-content-start mt-lg-3">
+            <div class="col-md-8 offset-md-3 mt-3 mb-1">
+                {% block content %}
+                {% endblock content %}
+            </div>
+        </div>
+    </main>
+    <!-- custom content end -->
 
     <script>
-        // temporary function to check if we are logged in
-        function checkLogin() {
-            const user = sessionStorage.getItem('user_email');
-            if (user) {
-                console.log("Logged in as: " + user);
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = "/login";
+        }
+
+        function updateNavBar() {
+            const isLoggedIn = sessionStorage.getItem("user_id") !== null;
+            const userItems = document.querySelectorAll('.auth-user');
+            const guestItems = document.querySelectorAll('.auth-guest');
+
+            if (isLoggedIn) {
+                userItems.forEach(el => el.classList.remove('d-none'));
+                guestItems.forEach(el => el.classList.add('d-none'));
+            } else {
+                userItems.forEach(el => el.classList.add('d-none'));
+                guestItems.forEach(el => el.classList.remove('d-none'));
             }
         }
-        checkLogin();
+
+        updateNavBar();
+
+        const sidebarEmail = document.getElementById('userEmailSidebar');
+        if (sidebarEmail) {
+            const storedEmail = sessionStorage.getItem("email");
+            sidebarEmail.textContent = storedEmail || '';
+        }        
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,141 +1,184 @@
 {% extends "layout.html" %}
 
+{% block title %}My Vault{% endblock title %}
+
 {% block content %}
-    <h2>My Vault</h2>
-    <div style="margin-bottom: 20px;">
-        <button onclick="document.getElementById('createModal').showModal()">Add New Item</button>
-        <button onclick="logout()">Logout</button>
+    <div class="mb-4">
+        <div class="d-flex flex-column flex-md-row gap-2">
+            <div class="d-flex w-100 w-md-50">
+                <button class="btn btn-sm btn-primary w-100" type="button" data-bs-toggle="modal" data-bs-target="#createModal">New Item</button>
+            </div>
+        </div>
     </div>
-    <hr>
 
-    <h3>Saved Items</h3>
-    <p id="loading">Loading vault...</p>
-    <ul id="vaultList"></ul>
+    <div id="vaultList" class="d-flex flex-column gap-3"></div>
 
-    <dialog id="createModal" style="padding: 20px; border: 1px solid #333;">
-        <h3>Add New Item</h3>
-        <form id="createForm" method="dialog">
-            <label>Name:</label><br>
-            <input type="text" id="newName" required><br><br>
+    <div id="emptyState" class="container text-center mt-3 d-none">
+        <h5>There are no items in the list.</h5>
+    </div>
 
-            <label>Password / Secret:</label><br>
-            <input type="text" id="newContent" required><br><br>
+    <div class="modal fade" id="createModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow">
+                <form id="createForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">New Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="newName" class="form-label">Name</label>
+                        <input type="text" id="newName" class="form-control mb-3" required>
 
-            <button type="submit" value="save">Save</button>
-            <button type="button" onclick="document.getElementById('createModal').close()">Cancel</button>
-        </form>
-    </dialog>
+                        <label for="newContent" class="form-label">Secret / Password</label>
+                        <input type="text" id="newContent" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    <dialog id="editModal" style="padding: 20px; border: 1px solid #333;">
-        <h3>Edit Item</h3>
-        <form id="editForm" method="dialog">
-            <input type="hidden" id="editId">
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow">
+                <form id="editForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Edit Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editId">
 
-            <label>Name:</label><br>
-            <input type="text" id="editName"><br><br>
+                        <label for="editName" class="form-label">Name</label>
+                        <input type="text" id="editName" class="form-control mb-3">
 
-            <label>Password / Secret (leave blank to keep current):</label><br>
-            <input type="text" id="editContent" placeholder="(Hidden)"><br><br>
-
-            <button type="submit" value="save">Update</button>
-            <button type="button" onclick="document.getElementById('editModal').close()">Cancel</button>
-        </form>
-    </dialog>
+                        <label for="editContent" class="form-label">Secret</label>
+                        <div class="input-group">
+                            <input type="text" id="editContent" class="form-control">
+                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard()"><i class="bi bi-clipboard"></i></button>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <button type="button" class="btn btn-danger" onclick="deleteItem()">Delete</button>
+                        <button type="submit" class="btn btn-success">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
         const userId = sessionStorage.getItem('user_id');
         const vaultKeyJson = sessionStorage.getItem('vault_key');
         let vaultKey = null;
 
+        const getModal = (id) => bootstrap.Modal.getOrCreateInstance(document.querySelector(id));
+
         if (!userId || !vaultKeyJson) {
             window.location.href = "/login";
         }
 
-        async function init() {
+        (async function init() {
             try {
                 // JSON string -> crypto key
-                const jwk = JSON.parse(vaultKeyJson);
-                vaultKey = await importVaultKey(jwk);
+                vaultKey = await importVaultKey(JSON.parse(vaultKeyJson));
                 await loadItems();
             } catch (err) {
                 console.error(err);
-                alert("Error loading encryption key. Please log in again.");
-                window.location.href = "/login";
             }
-        }
+        })();
 
         async function loadItems() {
-            const list = document.getElementById('vaultList');
-            const loading = document.getElementById('loading');
-
             try {
                 const res = await fetch(`/api/items?user_id=${userId}`);
                 const items = await res.json();
-
-                loading.style.display = 'none';
-                list.innerHTML = "";
-
-                if (items.length === 0) {
-                    list.innerHTML = "<li>No items yet.</li>";
-                    return;
-                }
-
-                for (const item of items) {
-                    const plainPassword = await decryptVaultItem(vaultKey, item.encrypted_content);
-                    const li = document.createElement('li');
-                    li.style.marginBottom = "15px";
-                    li.innerHTML = `
-                        <strong>${item.name}</strong> 
-                        <button onclick='openEditModal(${JSON.stringify(item)}, "${plainPassword}")'>Edit</button>
-                        <button onclick="deleteItem(${item.id})">Delete</button>
-                        <br>
-                        <code>${plainPassword}</code>
-                    `;
-                    list.appendChild(li);
-                }
-            } catch (err) {
-                loading.innerText = "Error: " + err;
+                renderList(items);
+            } catch (err) { 
+                console.error(err); 
             }
         }
 
-        document.getElementById('createForm').addEventListener('submit', async (e) => {
-            e.preventDefault();  // prevent default browser submission
+        async function renderList(items) {
+            const listContainer = document.getElementById('vaultList');
+            const emptyState = document.getElementById('emptyState');
+            listContainer.innerHTML = "";
 
-            const name = document.getElementById('newName').value;
-            const content = document.getElementById('newContent').value;
-            const encryptedHex = await encryptVaultItem(vaultKey, content);
+            if (items.length === 0) {
+                emptyState.classList.remove('d-none');
+                return;
+            }
+            emptyState.classList.add('d-none');
 
+            for (const item of items) {
+                const domain = 'instagram.com';  // TODO: fetch url from api
+                const dateStr = new Date(item.date_added).toLocaleDateString();
+                const link = document.createElement('a');
+
+                link.href = "#";
+                link.className = "text-decoration-none item-card"; 
+                link.setAttribute('data-name', item.name.toLowerCase());
+
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    if (window.getSelection().toString().length === 0) {
+                        openEditModal(item);
+                    }
+                };
+
+                link.innerHTML = `
+                    <article class="media border-dark rounded shadow item-section p-3 d-flex align-items-center bg-white text-dark mb-0">
+                        <div class="favicon-wrapper me-md-4 me-3">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=${domain}" alt="favicon" width="32" height="32">
+                        </div>
+                        <div class="media-body flex-grow-1">
+                            <div class="item-metadata mb-0">
+                                <small class="text-muted">${dateStr}</small>
+                            </div>
+                            <h2 class="mb-0 item-name h5 fw-bold">${item.name}</h2>
+                        </div>
+                    </article>
+                `;
+                listContainer.appendChild(link);
+            }
+        }
+
+        document.getElementById('createForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const encryptedHex = await encryptVaultItem(vaultKey, document.getElementById('newContent').value);
             await fetch('/api/items', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: name,
+                    name: document.getElementById('newName').value,
                     encrypted_content: encryptedHex,
                     user_id: parseInt(userId)
                 })
             });
-            document.getElementById('newName').value = "";
-            document.getElementById('newContent').value = "";
-            document.getElementById('createModal').close();
-            loadItems(); 
-        });
+            e.target.reset();
+            getModal('#createModal').hide();
+            loadItems();
+        };
 
-        // pass plain password so user can see what they are editing
-        function openEditModal(item, plainPassword) {
+        async function openEditModal(item) {
             document.getElementById('editId').value = item.id;
             document.getElementById('editName').value = item.name;
-            document.getElementById('editContent').value = ""; 
-            document.getElementById('editContent').placeholder = "Enter new password to change";
-            document.getElementById('editModal').showModal();
+            const secretInput = document.getElementById('editContent');
+            getModal('#editModal').show();
+            try {
+                secretInput.value = await decryptVaultItem(vaultKey, item.encrypted_content);
+            } catch (err) {
+                secretInput.value = "Error";
+            }
         }
 
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
+        document.getElementById('editForm').onsubmit = async (e) => {
+            e.preventDefault();
             const id = document.getElementById('editId').value;
-            const name = document.getElementById('editName').value;
+            const payload = { name: document.getElementById('editName').value };
             const content = document.getElementById('editContent').value;
-            const payload = { name: name };
-
-            if (content) {
+            if(content) {
                 // only reencrypt if user typed a new password
                 payload.encrypted_content = await encryptVaultItem(vaultKey, content);
             }
@@ -145,22 +188,23 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-
-            document.getElementById('editModal').close();
+            getModal('#editModal').hide();
             loadItems();
-        });
+        };
 
-        async function deleteItem(id) {
-            if(!confirm("Delete this item?")) return;
-            await fetch(`/api/items/${id}?user_id=${userId}`, { method: 'DELETE' });
-            loadItems();
+        async function deleteItem() {
+            if(confirm("Delete item?")) {
+                const id = document.getElementById('editId').value;
+                await fetch(`/api/items/${id}?user_id=${userId}`, { method: 'DELETE' });
+                getModal('#editModal').hide();
+                loadItems();
+            }
         }
 
-        function logout() {
-            sessionStorage.clear();
-            window.location.href = "/login";
+        function copyToClipboard() {
+            const copyText = document.getElementById("editContent");
+            copyText.select();
+            navigator.clipboard.writeText(copyText.value);
         }
-
-        init();
     </script>
 {% endblock content %}
