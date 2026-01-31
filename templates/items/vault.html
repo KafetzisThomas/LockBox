@@ -4,9 +4,17 @@
 
 {% block content %}
     <div class="mb-4">
-        <div class="d-flex flex-column flex-md-row gap-2">
+        <div class="d-flex flex-column gap-2">
             <div class="d-flex w-100 w-md-50">
-                <button class="btn btn-sm btn-primary w-100" type="button" data-bs-toggle="modal" data-bs-target="#createModal">New Item</button>
+                <div class="input-group">
+                    <span class="input-group-text bg-body-tertiary"><i class="bi bi-search"></i></span>
+                    <input id="searchInput" class="form-control form-control-sm" type="search" placeholder="Search items..." onkeyup="filterItems()">
+                </div>
+            </div>
+            <div class="d-flex w-100 w-md-50">
+                <button class="btn btn-sm btn-primary w-100" type="button" data-bs-toggle="modal" data-bs-target="#createModal">
+                    <i class="bi bi-plus-lg me-1"></i> New Item
+                </button>
             </div>
         </div>
     </div>
@@ -14,7 +22,7 @@
     <div id="vaultList" class="d-flex flex-column gap-3"></div>
 
     <div id="emptyState" class="container text-center mt-3 d-none">
-        <h5>There are no items in the list.</h5>
+        <h5 class="text-muted">There are no items in the list.</h5>
     </div>
 
     <div class="modal fade" id="createModal" tabindex="-1">
@@ -103,6 +111,9 @@
         async function renderList(items) {
             const listContainer = document.getElementById('vaultList');
             const emptyState = document.getElementById('emptyState');
+
+            // reset empty state message if search filter changed it
+            emptyState.querySelector('h5').textContent = "There are no items in the list.";
             listContainer.innerHTML = "";
 
             if (items.length === 0) {
@@ -138,9 +149,37 @@
                             </div>
                             <h2 class="mb-0 item-name h5 fw-bold">${item.name}</h2>
                         </div>
+                        <i class="bi bi-chevron-right text-muted d-none d-md-block"></i>
                     </article>
                 `;
                 listContainer.appendChild(link);
+            }
+        }
+
+        function filterItems() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.item-card');
+            let hasVisible = false;
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                if (name.includes(query)) {
+                    card.classList.remove('d-none');
+                    hasVisible = true;
+                } else {
+                    card.classList.add('d-none');
+                }
+            });
+
+            const emptyState = document.getElementById('emptyState');
+            if (!hasVisible && cards.length > 0) {
+                emptyState.classList.remove('d-none');
+                emptyState.querySelector('h5').textContent = "No matches found.";
+            } else if (cards.length === 0) {
+                emptyState.classList.remove('d-none');
+                emptyState.querySelector('h5').textContent = "There are no items in the list.";
+            } else {
+                emptyState.classList.add('d-none');
             }
         }
 
@@ -179,7 +218,6 @@
             const payload = { name: document.getElementById('editName').value };
             const content = document.getElementById('editContent').value;
             if(content) {
-                // only reencrypt if user typed a new password
                 payload.encrypted_content = await encryptVaultItem(vaultKey, content);
             }
 
