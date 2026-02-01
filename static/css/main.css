@@ -1,4 +1,3 @@
-/* Google font - Open Sans */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 body {
@@ -7,7 +6,6 @@ body {
   font-style: normal;
 }
 
-/* Sidebar styles */
 .sidebar {
   position: fixed;
   height: 100vh;
@@ -18,56 +16,69 @@ body {
   z-index: 1030;
 }
 
-/* Item styles */
+.search-group:focus-within {
+  border: 1px solid #0d6efd;
+  border-radius: .375rem;
+}
+
+.search-group:focus-within .input-group-text,
+.search-group:focus-within .form-control {
+  box-shadow: none;
+}
+
 .item-section {
   display: flex;
   align-items: center;
-  background: #ffffff;
+
+  /* dark mode support */
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+
   padding: 10px 20px;
-  border: 1px solid #dddddd;
   border-radius: 3px;
   margin-bottom: 20px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Hover state styles for item box */
+/* styles for cards in dark mode */
+[data-bs-theme="dark"] .item-section {
+  background: var(--bs-tertiary-bg);
+}
+
 .item-section:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Favicon styles */
 .favicon-wrapper {
   width: 40px;
   height: 40px;
   border-radius: 4px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-/* Item name styles */
 .item-name {
-  color: #333333;
+  color: var(--bs-body-color);
   font-size: 25px;
   font-weight: bold;
   text-decoration: none;
 }
 
-/* Styles for each item's metadata */
 .item-metadata {
   padding-bottom: 4px;
   margin-bottom: 8px;
-  border-bottom: 2px dashed #cccccc;
+  border-bottom: 2px dashed var(--bs-border-color);
 }
 
-/* Styles for each item's metadata a tag */
 .item-metadata a {
   color: inherit;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
-/* Styles for each feature card */
 .card {
   text-align: center;
   display: flex;
@@ -78,23 +89,20 @@ body {
   transition: transform 0.3s ease;
 }
 
-/* Hover state styles for feature card */
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Styles for length of generated password field */
+/* styles for length of generated password field */
 .lengthfield-size {
   max-width: 100px;
 }
 
-/* List results styles */
 .list-results {
   transition: transform 0.3s ease;
 }
 
-/* Hover state styles for list results */
 .list-results:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
