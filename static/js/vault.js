@@ -28,6 +28,10 @@ async function loadItems() {
     }
 }
 
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 async function renderList(items) {
     const listContainer = document.getElementById('vaultList');
     const emptyState = document.getElementById('emptyState');
@@ -75,7 +79,7 @@ async function renderList(items) {
                     <div class="item-metadata mb-0">
                         <small class="text-muted">${dateStr}</small>
                     </div>
-                    <h2 class="mb-0 item-name h5 fw-bold">${item.name}</h2>
+                    <h2 class="mb-0 item-name h5 fw-bold">${capitalize(item.name)}</h2>
                 </div>
                 <i class="bi bi-chevron-right text-muted d-none d-md-block"></i>
             </article>
