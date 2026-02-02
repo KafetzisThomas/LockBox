@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List, Optional
-from schemas import UserCreate, UserResponse, UserEmailUpdate
+from schemas import UserCreate, UserResponse, UserEmailUpdate, UserMasterPasswordUpdate
 from models import User
 from database import get_db
 
@@ -65,6 +65,23 @@ async def update_user_email(user_id: int, user_update: UserEmailUpdate, db: Asyn
         await db.commit()
         await db.refresh(user)
 
+    return user
+
+
+@router.patch("/{user_id}/master_password", response_model=UserResponse)
+async def update_user_master_password(user_id: int, user_update: UserMasterPasswordUpdate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).filter(User.id == user_id))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    user.auth_hash = user_update.auth_hash
+    user.kdf_salt = user_update.kdf_salt
+    user.wrapped_key = user_update.wrapped_key
+
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
     return user
 
 

@@ -1,6 +1,8 @@
 const userId = sessionStorage.getItem('user_id');
 const msgDisplay = document.getElementById('message');
 
+let user = null;
+
 if (!userId) {
     window.location.href = "/login";
 }
@@ -14,12 +16,14 @@ function showMessage(text, isError = false) {
 (async function init() {
     const res = await fetch(`/api/users/${userId}`);
     if (res.ok) {
-        const user = await res.json();
+        user = await res.json();
         document.getElementById('email').value = user.email;
         try {  // keep sidebar and session in sync
             sessionStorage.setItem('email', user.email);
             const sidebarEmail = document.getElementById('userEmailSidebar');
-            if (sidebarEmail) sidebarEmail.textContent = user.email;
+            if (sidebarEmail) {
+                sidebarEmail.textContent = user.email;
+            }
         } catch (e) {
             console.warn('Could not update sidebar email', e);
         }
@@ -48,6 +52,7 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
             throw new Error(data.detail || "Failed to update email");
         }
         showMessage("Email updated successfully!");
+        user.email = newEmail;
 
         // refresh email in sidebar display
         sessionStorage.setItem('email', newEmail);
@@ -56,6 +61,72 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
             sidebarEmail.textContent = newEmail;
         }
     } catch (err) {
+        showMessage(err.message, true);
+    }
+});
+
+document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!user) {
+        showMessage("User data not loaded.", true);
+        return;
+    }
+
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+        showMessage("New passwords do not match.", true);
+        return;
+    }
+
+    if (newPassword.length < 8) {
+        showMessage("New password must be at least 8 characters.", true);
+        return;
+    }
+
+    try {
+        const currentSalt = fromHex(user.kdf_salt);
+        const currentKey = await deriveKeyFromPassword(currentPassword, currentSalt);
+        let vaultKey;
+
+        try {
+            vaultKey = await unwrapVaultKey(user.wrapped_key, currentKey);
+        } catch (err) {
+            throw new Error("Current master password is incorrect.");
+        }
+
+        const newSalt = generateSalt();
+        const newKey = await deriveKeyFromPassword(newPassword, newSalt);
+        const newWrappedKey = await wrapVaultKey(vaultKey, newKey);
+        const newAuthHash = await deriveAuthHash(newKey);
+
+        const res = await fetch(`/api/users/${userId}/master_password`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                auth_hash: newAuthHash,
+                kdf_salt: toHex(newSalt),
+                wrapped_key: newWrappedKey
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error("Failed to update password");
+        }
+
+        user.kdf_salt = toHex(newSalt);
+        user.wrapped_key = newWrappedKey;
+        
+        document.getElementById('currentPassword').value = "";
+        document.getElementById('newPassword').value = "";
+        document.getElementById('confirmPassword').value = "";        
+        showMessage("Master password updated successfully!");
+    } catch (err) {
+        console.error(err);
         showMessage(err.message, true);
     }
 });

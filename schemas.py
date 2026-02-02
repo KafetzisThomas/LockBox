@@ -16,6 +16,12 @@ class UserEmailUpdate(BaseModel):
     email: EmailStr
 
 
+class UserMasterPasswordUpdate(BaseModel):
+    auth_hash: str
+    kdf_salt: str
+    wrapped_key: str
+
+
 class UserResponse(UserBase):
     id: int
     auth_hash: str
