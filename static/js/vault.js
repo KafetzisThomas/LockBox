@@ -207,3 +207,26 @@ function copyToClipboard(elementId) {
     copyText.select();
     navigator.clipboard.writeText(copyText.value);
 }
+
+function generatePassword(length = 20) {
+    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const values = new Uint32Array(length);
+    window.crypto.getRandomValues(values);
+
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        password += charset[values[i] % charset.length];
+    }
+    return password;
+}
+
+function fillPasswordField(elementId) {
+    const input = document.getElementById(elementId);
+    if (input) {
+        input.value = generatePassword();
+        input.classList.add('bg-warning-subtle');
+        setTimeout(() => {
+            input.classList.remove('bg-warning-subtle');
+        }, 300);
+    }
+}
