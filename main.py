@@ -30,6 +30,11 @@ def vault_page(request: Request):
     return templates.TemplateResponse("items/vault.html", {"request": request, "title": "My Vault"})
 
 
+@app.get("/account", include_in_schema=False)
+def account_page(request: Request):
+    return templates.TemplateResponse("users/account.html", {"request": request, "title": "Account"})
+
+
 @app.get("/login", include_in_schema=False)
 def login_page(request: Request):
     return templates.TemplateResponse("users/login.html", {"request": request, "title": "Login"})

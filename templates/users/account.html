@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}Account{% endblock title %}
+
+{% block content %}
+    <h1>Your Account Settings</h1>
+    <form id="emailForm" class="mb-5">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" id="email" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Update Email Address</button>
+    </form>
+    <p id="message" class="text-center"></p>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="/static/js/account.js"></script>
+{% endblock scripts %}

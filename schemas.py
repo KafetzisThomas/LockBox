@@ -12,11 +12,8 @@ class UserCreate(UserBase):
     wrapped_key: str
 
 
-class UserUpdate(UserBase):
-    email: EmailStr | None = None
-    auth_hash: str | None = None
-    kdf_salt: str | None = None
-    wrapped_key: str | None = None
+class UserEmailUpdate(BaseModel):
+    email: EmailStr
 
 
 class UserResponse(UserBase):
