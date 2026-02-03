@@ -93,13 +93,22 @@
                 <a class="nav-link text-light {% if title == 'My Vault' %}active{% endif %}" href="{{ url_for('vault_page') }}"><i class="bi bi-safe me-2"></i> Vault</a>
             </li>
             <li class="nav-item auth-user d-none">
-                <a class="nav-link text-light" {% if title == 'Generator' %}active{% endif %} href="#"><i class="bi bi-key me-2"></i> Generator</a>
+                <a class="nav-link text-light {% if title == 'Generator' %}active{% endif %}" href="#"><i class="bi bi-key me-2"></i> Generator</a>
             </li>
             <li class="nav-item auth-user d-none">
-                <a class="nav-link text-light" {% if title == 'Import Data' %}active{% endif %} href="#"><i class="bi bi-upload me-2"></i> Import Data</a>
+                <a class="nav-link text-light {% if title == 'Import Data' %}active{% endif %}" href="#"><i class="bi bi-upload me-2"></i> Import Data</a>
             </li>
             <li class="nav-item auth-user d-none">
-                <a class="nav-link text-light" {% if title == 'Checkup' %}active{% endif %} href="#"><i class="bi bi-shield-check me-2"></i> Checkup</a>
+                <a class="nav-link text-light {% if title == 'Checkup' %}active{% endif %}" href="#"><i class="bi bi-shield-check me-2"></i> Checkup</a>
+            </li>
+            <li class="nav-item auth-user d-none">
+                <hr class="border-light">
+            </li>
+            <li class="nav-item auth-user d-none">
+                <a class="nav-link text-light {% if title == 'Account' %}active{% endif %}" href="{{ url_for('account_page') }}"><i class="bi bi-person me-2"></i> Account</a>
+            </li>
+            <li class="nav-item auth-user d-none">
+                <a class="nav-link text-light" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
             </li>
             <li class="nav-item auth-guest">
                 <a class="nav-link text-light {% if title == 'Login' %}active{% endif %}" href="{{ url_for("login_page") }}"><i class="bi bi-door-open"></i> Login</a>
@@ -119,13 +128,6 @@
                 <li><button class="dropdown-item" type="button" data-bs-theme-value="light"><i class="bi bi-sun-fill me-2 opacity-50"></i> Light</button></li>
                 <li><button class="dropdown-item" type="button" data-bs-theme-value="dark"><i class="bi bi-moon-stars-fill me-2 opacity-50"></i> Dark</button></li>
                 <li><button class="dropdown-item" type="button" data-bs-theme-value="auto"><i class="bi bi-circle-half me-2 opacity-50"></i> Auto</button></li>
-                <li><hr class="dropdown-divider"></li>
-                <li class="auth-user d-none">
-                    <a class="dropdown-item" href="{{ url_for("account_page") }}">Account</a>
-                </li>
-                <li class="auth-user d-none">
-                    <a class="dropdown-item" href="#" onclick="logout()">Logout</a>
-                </li>
             </ul>
         </div>
 
