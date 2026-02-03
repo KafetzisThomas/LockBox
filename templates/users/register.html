@@ -4,6 +4,7 @@
 
 {% block content %}
     <h2>Create a free account.</h2>
+    <p id="message" class="mt-3 text-center"></p>
     <form id="registerForm" class="w-100 mx-auto mt-4">
         <div class="mb-3">
             <label for="email" class="form-label">Email Address</label>
@@ -15,9 +16,9 @@
         </div>
         <button type="submit" class="btn btn-primary w-100">Sign Up</button>
     </form>
-    <p id="message" class="mt-3 text-center"></p>
 {% endblock content %}
 
 {% block scripts %}
+    <script src="/static/js/main.js"></script>
     <script src="/static/js/register.js"></script>
 {% endblock scripts %}

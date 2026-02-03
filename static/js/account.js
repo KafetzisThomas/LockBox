@@ -7,12 +7,6 @@ if (!userId) {
     window.location.href = "/login";
 }
 
-function showMessage(text, isError = false) {
-    msgDisplay.textContent = text;
-    msgDisplay.className = isError ? "mt-3 text-center text-danger fw-bold" : "mt-3 text-center text-success fw-bold";
-    setTimeout(() => { msgDisplay.textContent = ""; }, 5000);
-}
-
 (async function init() {
     const res = await fetch(`/api/users/${userId}`);
     if (res.ok) {
@@ -35,8 +29,8 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
     const emailInput = document.getElementById('email');
     const newEmail = emailInput.value;
 
-    if (!newEmail || !newEmail.includes('@')) {
-        showMessage("Please enter a valid email.", true);
+    if (!emailInput.checkValidity()) {
+        showMessage("Please enter a valid email.", "danger", "emailMessage");
         return;
     }
 
@@ -51,7 +45,7 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
         if (!res.ok) {
             throw new Error(data.detail || "Failed to update email");
         }
-        showMessage("Email updated successfully!");
+        showMessage("Email updated successfully!", "success", "emailMessage");
         user.email = newEmail;
 
         // refresh email in sidebar display
@@ -61,7 +55,7 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
             sidebarEmail.textContent = newEmail;
         }
     } catch (err) {
-        showMessage(err.message, true);
+        showMessage(err.message, "danger", "emailMessage");
     }
 });
 
@@ -69,7 +63,7 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
     e.preventDefault();
     
     if (!user) {
-        showMessage("User data not loaded.", true);
+        showMessage("User data not loaded.", "danger", "passwordMessage");
         return;
     }
 
@@ -78,12 +72,12 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
     const confirmPassword = document.getElementById('confirmPassword').value;
 
     if (newPassword !== confirmPassword) {
-        showMessage("New passwords do not match.", true);
+        showMessage("New passwords do not match.", "danger", "passwordMessage");
         return;
     }
 
     if (newPassword.length < 8) {
-        showMessage("New password must be at least 8 characters.", true);
+        showMessage("New password must be at least 8 characters.", "danger", "passwordMessage");
         return;
     }
 
@@ -124,9 +118,9 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
         document.getElementById('currentPassword').value = "";
         document.getElementById('newPassword').value = "";
         document.getElementById('confirmPassword').value = "";        
-        showMessage("Master password updated successfully!");
+        showMessage("Master password updated successfully!", "success", "passwordMessage");
     } catch (err) {
         console.error(err);
-        showMessage(err.message, true);
+        showMessage(err.message, "passwordMessage", "danger", "passwordMessage");
     }
 });

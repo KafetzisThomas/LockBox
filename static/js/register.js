@@ -1,6 +1,5 @@
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const msg = document.getElementById('message');
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
@@ -25,13 +24,12 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         });
 
         if (response.ok) {
-            alert("Registration Successful!");
-            window.location.href = "/login";
+            window.location.href = "/login?registered=true";
         } else {
             const errorData = await response.json();
-            msg.innerText = errorData.detail;
+            showMessage(errorData.detail, "danger");
         }
     } catch (err) {
-        msg.innerText = err;
+        showMessage(err, "danger");
     }
 });

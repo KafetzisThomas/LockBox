@@ -1,6 +1,12 @@
+const urlParams = new URLSearchParams(window.location.search);
+
+if (urlParams.get('registered') === 'true') {
+    showMessage("Registration successful! Please log in.");
+    window.history.replaceState({}, document.title, "/login");
+}
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const msg = document.getElementById('message');
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
@@ -10,7 +16,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const users = await response.json();
 
         if (users.length === 0) {
-            msg.innerText = "User not found";
+            showMessage("User not found.", "danger");
             return;
         }
         const user = users[0];
@@ -36,6 +42,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         window.location.href = "/";
 
     } catch (err) {
-        msg.innerText = err;
+        showMessage(err, "danger");
     }
 });

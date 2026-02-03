@@ -10,6 +10,8 @@
         </button>
     </div>
 
+    <p id="message" class="text-center"></p>
+
     <div id="vaultList" class="d-flex flex-column gap-3"></div>
 
     <div id="emptyState" class="container text-center mt-3 d-none">
@@ -118,5 +120,6 @@
 {% endblock content %}
 
 {% block scripts %}
+    <script src="/static/js/main.js"></script>
     <script src="/static/js/vault.js"></script>
 {% endblock scripts %}

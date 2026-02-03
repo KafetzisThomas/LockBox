@@ -111,6 +111,7 @@ document.getElementById('createForm').onsubmit = async (e) => {
     });
     e.target.reset();
     getModal('#createModal').hide();
+    showMessage("Item created successfully!");
     loadItems();
 };
 
@@ -164,6 +165,7 @@ document.getElementById('editForm').onsubmit = async (e) => {
         body: JSON.stringify(payload)
     });
     getModal('#editModal').hide();
+    showMessage("Item updated successfully!");
     loadItems();
 };
 
@@ -198,6 +200,7 @@ async function deleteItem() {
         const id = document.getElementById('editId').value;
         await fetch(`/api/items/${id}?user_id=${userId}`, { method: 'DELETE' });
         getModal('#editModal').hide();
+        showMessage("Item deleted successfully!", "danger");
         loadItems();
     }
 }

@@ -11,6 +11,7 @@
             <input type="email" id="email" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-primary w-100">Update Email Address</button>
+        <p id="emailMessage" class="text-center mt-4"></p>
     </form>
 
     <form id="passwordForm">
@@ -25,11 +26,11 @@
             <input type="password" id="confirmPassword" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-danger w-100">Update Master Password</button>
+        <p id="passwordMessage" class="text-center mt-4"></p>
     </form>
-
-    <p id="message" class="text-center"></p>
 {% endblock content %}
 
 {% block scripts %}
+    <script src="/static/js/main.js"></script>
     <script src="/static/js/account.js"></script>
 {% endblock scripts %}
