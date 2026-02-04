@@ -14,7 +14,7 @@ class User(Base):
     kdf_salt: Mapped[str] = mapped_column(String(255), nullable=False)
     wrapped_key: Mapped[str] = mapped_column(Text, nullable=False)
     date_created: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-    items: Mapped[list["Item"]] = relationship(back_populates="user")
+    items: Mapped[list["Item"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
 class Item(Base):

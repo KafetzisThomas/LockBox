@@ -11,10 +11,10 @@
             <input type="email" id="email" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-primary w-100">Update Email Address</button>
-        <p id="emailMessage" class="text-center mt-4"></p>
+        <div id="emailMessage" class="mt-4 text-center"></div>
     </form>
 
-    <form id="passwordForm">
+    <form id="passwordForm" class="mb-4 border-bottom pb-4">
         <div class="mb-4 d-flex flex-column gap-2">
             <label for="currentPassword" class="form-label">Current Master Password</label>
             <input type="password" id="currentPassword" class="form-control" required>
@@ -26,8 +26,34 @@
             <input type="password" id="confirmPassword" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-danger w-100">Update Master Password</button>
-        <p id="passwordMessage" class="text-center mt-4"></p>
+        <div id="passwordMessage" class="mt-4 text-center"></div>
     </form>
+
+    <div class="mt-4">
+        <h3 class="text-danger">Danger Zone</h3>
+        <p class="text-muted">Once you delete your account, there is no going back. Please be certain.</p>
+        <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+            Delete Account
+        </button>
+    </div>
+
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger" id="deleteAccountModalLabel">Delete Account?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete your account? All your vault data will be permanently removed. This action cannot be undone.
+                </div>
+                <div class="modal-footer d-flex gap-2">
+                    <button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger flex-fill" id="confirmDeleteAccount">Delete Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block scripts %}

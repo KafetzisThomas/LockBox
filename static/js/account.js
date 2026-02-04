@@ -1,5 +1,4 @@
 const userId = sessionStorage.getItem('user_id');
-const msgDisplay = document.getElementById('message');
 
 let user = null;
 
@@ -121,6 +120,26 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
         showMessage("Master password updated successfully!", "success", "passwordMessage");
     } catch (err) {
         console.error(err);
-        showMessage(err.message, "passwordMessage", "danger", "passwordMessage");
+        showMessage(err.message, "danger", "passwordMessage");
+    }
+});
+
+document.getElementById('confirmDeleteAccount').addEventListener('click', async () => {
+    try {
+        const res = await fetch(`/api/users/${userId}`, {method: 'DELETE'});
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.detail || "Failed to delete account");
+        }
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteAccountModal'));
+        if (modal) {
+            modal.hide();
+        }        
+        sessionStorage.clear();
+        window.location.href = "/login?accountdeleted=true";
+    } catch (err) {
+        console.error(err);
+        showMessage("Error deleting account: " + err.message, "danger", "passwordMessage");
     }
 });

@@ -5,6 +5,11 @@ if (urlParams.get('registered') === 'true') {
     window.history.replaceState({}, document.title, "/login");
 }
 
+if (urlParams.get('accountdeleted') === 'true') {
+    showMessage("Your account and all associated vault data have been permanently deleted.");
+    window.history.replaceState({}, document.title, "/login");
+}
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
@@ -42,6 +47,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         window.location.href = "/";
 
     } catch (err) {
-        showMessage(err, "danger");
+        showMessage(err.message, "danger");
     }
 });
