@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List, Optional
-from schemas import UserCreate, UserResponse, UserEmailUpdate, UserMasterPasswordUpdate
+from schemas import UserCreate, UserResponse, UserEmailUpdate, UserMasterPasswordUpdate, User2FAUpdate, User2FAVerify
 from models import User
 from database import get_db
+import pyotp
 
 router = APIRouter()
 
@@ -83,6 +84,39 @@ async def update_user_master_password(user_id: int, user_update: UserMasterPassw
     await db.commit()
     await db.refresh(user)
     return user
+
+
+@router.patch("/{user_id}/2fa", response_model=UserResponse)
+async def update_user_2fa(user_id: int, user_update: User2FAUpdate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).filter(User.id == user_id))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    user.enable_2fa = user_update.enable_2fa
+    if user_update.otp_secret:
+        user.otp_secret = user_update.otp_secret
+    elif not user.enable_2fa:
+        user.otp_secret = None
+
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+@router.post("/verify_2fa")
+async def verify_2fa(payload: User2FAVerify, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).filter(User.id == payload.user_id))
+    user = result.scalars().first()
+    if not user or not user.otp_secret:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="2fa not enabled for this user")
+
+    totp = pyotp.TOTP(user.otp_secret)
+    if totp.verify(payload.otp_code):
+        return {"status": "success"}
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid OTP code")
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -22,11 +22,23 @@ class UserMasterPasswordUpdate(BaseModel):
     wrapped_key: str
 
 
+class User2FAUpdate(BaseModel):
+    enable_2fa: bool
+    otp_secret: str | None = None
+
+
+class User2FAVerify(BaseModel):
+    otp_code: str
+    user_id: int
+
+
 class UserResponse(UserBase):
     id: int
     auth_hash: str
     kdf_salt: str
     wrapped_key: str
+    enable_2fa: bool
+    otp_secret: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

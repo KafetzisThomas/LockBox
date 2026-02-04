@@ -40,11 +40,16 @@ def checkup_page(request: Request):
     return templates.TemplateResponse("items/checkup.html", {"request": request, "title": "Checkup"})
 
 
+@app.get("/register", include_in_schema=False)
+def register_page(request: Request):
+    return templates.TemplateResponse("users/register.html", {"request": request, "title": "Register"})
+
+
 @app.get("/login", include_in_schema=False)
 def login_page(request: Request):
     return templates.TemplateResponse("users/login.html", {"request": request, "title": "Login"})
 
 
-@app.get("/register", include_in_schema=False)
-def register_page(request: Request):
-    return templates.TemplateResponse("users/register.html", {"request": request, "title": "Register"})
+@app.get("/2fa_verification", include_in_schema=False)
+def two_factor_verification_page(request: Request):
+    return templates.TemplateResponse("users/2fa_verification.html", {"request": request, "title": "2FA Verification"})

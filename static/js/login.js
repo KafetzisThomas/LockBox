@@ -41,6 +41,14 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
         const exportedKey = await window.crypto.subtle.exportKey("jwk", vaultKey);
         
+        if (user.enable_2fa) {
+            sessionStorage.setItem("pending_vault_key", JSON.stringify(exportedKey));
+            sessionStorage.setItem("pending_user_id", user.id);
+            sessionStorage.setItem("pending_email", email);
+            window.location.href = "/2fa_verification";
+            return;
+        }
+
         sessionStorage.setItem("vault_key", JSON.stringify(exportedKey));
         sessionStorage.setItem("user_id", user.id);
         sessionStorage.setItem("email", email);

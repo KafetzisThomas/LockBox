@@ -11,6 +11,12 @@ if (!userId) {
     if (res.ok) {
         user = await res.json();
         document.getElementById('email').value = user.email;
+
+        const twoFactorToggle = document.getElementById('twoFactorToggle');
+        if (twoFactorToggle) {
+            twoFactorToggle.checked = user.enable_2fa;
+        }
+
         try {  // keep sidebar and session in sync
             sessionStorage.setItem('email', user.email);
             const sidebarEmail = document.getElementById('userEmailSidebar');
@@ -40,9 +46,8 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
             body: JSON.stringify({ email: newEmail })
         });
 
-        const data = await res.json();
         if (!res.ok) {
-            throw new Error(data.detail || "Failed to update email");
+            throw new Error("Failed to update email");
         }
         showMessage("Email updated successfully!", "success", "emailMessage");
         user.email = newEmail;
@@ -124,12 +129,68 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
     }
 });
 
+function generateOTPSecret(length = 16) {
+    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";  // base32
+    let secret = "";
+    const values = new Uint8Array(length);
+    window.crypto.getRandomValues(values);
+    for (let i = 0; i < length; i++) {
+        secret += charset[values[i] % charset.length];
+    }
+    return secret;
+}
+
+const twoFactorToggle = document.getElementById('twoFactorToggle');
+if (twoFactorToggle) {
+    twoFactorToggle.addEventListener('change', async (e) => {
+        const enabled = e.target.checked;
+        let otpSecret = user.otp_secret;
+
+        if (enabled && !otpSecret) {
+            otpSecret = generateOTPSecret();
+        }
+
+        try {
+            const res = await fetch(`/api/users/${userId}/2fa`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    enable_2fa: enabled,
+                    otp_secret: enabled ? otpSecret : null
+                })
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to update 2FA status");
+            }
+
+            user.enable_2fa = enabled;
+            user.otp_secret = enabled ? otpSecret : null;
+
+            if (enabled) {
+                const qrImage = document.getElementById('qrCodeImg');
+                const secretDisplay = document.getElementById('otpSecretDisplay');
+                const qrData = `otpauth://totp/LockBox:${user.email}?secret=${otpSecret}&issuer=LockBox`;
+                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+                secretDisplay.textContent = otpSecret;
+                const modal = new bootstrap.Modal(document.getElementById('twoFactorModal'));
+                modal.show();
+                showMessage("2FA enabled successfully!", "success", "2faMessage");
+            } else {
+                showMessage("2FA disabled.", "warning", "2faMessage");
+            }
+        } catch (err) {
+            e.target.checked = !enabled;
+            showMessage(err.message, "danger", "2faMessage");
+        }
+    });
+}
+
 document.getElementById('confirmDeleteAccount').addEventListener('click', async () => {
     try {
         const res = await fetch(`/api/users/${userId}`, {method: 'DELETE'});
         if (!res.ok) {
-            const data = await res.json();
-            throw new Error(data.detail || "Failed to delete account");
+            throw new Error("Failed to delete account");
         }
 
         const modal = bootstrap.Modal.getInstance(document.getElementById('deleteAccountModal'));
