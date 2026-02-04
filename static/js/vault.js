@@ -141,7 +141,7 @@ async function openEditModal(item) {
             linkBtn.classList.add('disabled');
         }
     } catch (err) {
-        console.error("Decryption error", err);
+        console.error(err);
     }
 }
 

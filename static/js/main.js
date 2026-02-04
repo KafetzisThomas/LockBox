@@ -1,3 +1,7 @@
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function showMessage(message, type = 'success', id = 'message') {
     const placeholder = document.getElementById(id);
     if (!placeholder) {

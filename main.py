@@ -35,6 +35,11 @@ def account_page(request: Request):
     return templates.TemplateResponse("users/account.html", {"request": request, "title": "Account"})
 
 
+@app.get("/checkup", include_in_schema=False)
+def checkup_page(request: Request):
+    return templates.TemplateResponse("items/checkup.html", {"request": request, "title": "Checkup"})
+
+
 @app.get("/login", include_in_schema=False)
 def login_page(request: Request):
     return templates.TemplateResponse("users/login.html", {"request": request, "title": "Login"})
