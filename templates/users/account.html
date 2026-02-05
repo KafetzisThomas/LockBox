@@ -44,6 +44,20 @@
         <div id="2faMessage" class="mt-2 text-center"></div>
     </div>
 
+    <div class="mb-4 border-bottom pb-4">
+        <h3 class="h5 fw-bold mb-3">Vault Timeout</h3>
+        <div class="mb-3">
+            <select class="form-select" id="sessionTimeout">
+                <option value="10">10 Minutes</option>
+                <option value="30">30 Minutes</option>
+                <option value="60">1 Hour</option>
+                <option value="180">3 Hours</option>
+            </select>
+            <small class="text-muted">Automatically lock your vault after being idle for this long.</small>
+        </div>
+        <div id="expireMessage" class="mt-2 text-center"></div>
+    </div>
+
     <div class="mt-4 mb-4">
         <h3 class="text-danger">Danger Zone</h3>
         <p class="text-muted">Once you delete your account, there is no going back. Please be certain.</p>

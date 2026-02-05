@@ -31,6 +31,17 @@ if (!userId) {
 
 document.addEventListener('DOMContentLoaded', () => {
     passwordStrengthMeter('newPassword');
+
+    // session timeout dropdown
+    const timeoutSelect = document.getElementById('sessionTimeout');
+    if (timeoutSelect) {
+        timeoutSelect.value = localStorage.getItem('sessionTimeout') || '30';
+        timeoutSelect.addEventListener('change', (e) => {
+            localStorage.setItem('sessionTimeout', e.target.value);
+            showMessage("Timeout preference saved.", "success", "expireMessage");
+            SessionMonitor.start();  // restart countdown with new time
+        });
+    }
 });
 
 document.getElementById('emailForm').addEventListener('submit', async (e) => {

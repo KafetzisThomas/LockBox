@@ -46,3 +46,20 @@ function passwordStrengthMeter(inputId) {
         text.textContent = levels[score];
     });
 }
+
+const SessionMonitor = {
+    timer: null,
+    start() {
+        clearTimeout(this.timer);  // clear existing timer to avoid duplicates
+        if (!sessionStorage.getItem('user_id')) {
+            return;
+        }
+        const minutes = parseInt(localStorage.getItem('sessionTimeout') || '30');
+        this.timer = setTimeout(() => logout(), minutes * 60 * 1000);
+    }
+};
+
+// start session monitoring on page load
+if (sessionStorage.getItem('user_id')) {
+    SessionMonitor.start();
+}
