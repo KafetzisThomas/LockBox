@@ -47,10 +47,10 @@
                         <a class="nav-link {% if title == 'My Vault' %}active{% endif %}" href="{{ url_for("vault_page") }}">Vault</a>
                     </li>
                     <li class="nav-item auth-user d-none">
-                        <a class="nav-link {% if title == 'Import Data' %}active{% endif %}" href="#">Import Data</a>
+                        <a class="nav-link {% if title == 'Checkup' %}active{% endif %}" href="{{ url_for('checkup_page') }}">Checkup</a>
                     </li>
                     <li class="nav-item auth-user d-none">
-                        <a class="nav-link {% if title == 'Checkup' %}active{% endif %}" href="{{ url_for('checkup_page') }}">Checkup</a>
+                        <a class="nav-link {% if title == 'Import Data' %}active{% endif %}" href="#">Import Data</a>
                     </li>
                     <li class="nav-item auth-user d-none">
                         <a class="nav-link {% if title == 'Account' %}active{% endif %}" href="{{ url_for("account_page") }}">Account</a>
@@ -93,13 +93,10 @@
                 <a class="nav-link text-light {% if title == 'My Vault' %}active{% endif %}" href="{{ url_for('vault_page') }}"><i class="bi bi-safe me-2"></i> Vault</a>
             </li>
             <li class="nav-item auth-user d-none">
-                <a class="nav-link text-light {% if title == 'Generator' %}active{% endif %}" href="#"><i class="bi bi-key me-2"></i> Generator</a>
+                <a class="nav-link text-light {% if title == 'Checkup' %}active{% endif %}" href="{{ url_for('checkup_page') }}"><i class="bi bi-shield-check me-2"></i> Checkup</a>
             </li>
             <li class="nav-item auth-user d-none">
                 <a class="nav-link text-light {% if title == 'Import Data' %}active{% endif %}" href="#"><i class="bi bi-upload me-2"></i> Import Data</a>
-            </li>
-            <li class="nav-item auth-user d-none">
-                <a class="nav-link text-light {% if title == 'Checkup' %}active{% endif %}" href="{{ url_for('checkup_page') }}"><i class="bi bi-shield-check me-2"></i> Checkup</a>
             </li>
             <li class="nav-item auth-user d-none">
                 <hr class="border-light">
