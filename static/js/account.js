@@ -29,6 +29,10 @@ if (!userId) {
     }
 })();
 
+document.addEventListener('DOMContentLoaded', () => {
+    passwordStrengthMeter('newPassword');
+});
+
 document.getElementById('emailForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const emailInput = document.getElementById('email');

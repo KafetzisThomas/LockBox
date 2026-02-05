@@ -18,3 +18,31 @@ function showMessage(message, type = 'success', id = 'message') {
     ].join('');
     placeholder.append(wrapper);
 }
+
+function passwordStrengthMeter(inputId) {
+    const pwd = document.getElementById(inputId);
+    const bar = document.getElementById('password-strength-bar');
+    const text = document.getElementById('password-strength-text');
+
+    const levels = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
+    const colors = ["bg-danger", "bg-danger", "bg-warning", "bg-info", "bg-success"];
+
+    pwd.addEventListener('input', () => {
+        const val = pwd.value;
+        if (!val) {
+            bar.style.width = "0%";
+            bar.className = "progress-bar";
+            text.textContent = "";
+            return;
+        }
+
+        const result = zxcvbn(val);
+        const score = result.score;  // 0 – 4 (=5 levels -> levels list)
+        const percentage = (score + 1) * 20;
+
+        bar.style.width = percentage + "%";
+        bar.className = "progress-bar " + colors[score];
+        bar.setAttribute("aria-valuenow", percentage);
+        text.textContent = levels[score];
+    });
+}
