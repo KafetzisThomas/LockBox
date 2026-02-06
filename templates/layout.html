@@ -50,7 +50,7 @@
                         <a class="nav-link {% if title == 'Checkup' %}active{% endif %}" href="{{ url_for('checkup_page') }}">Checkup</a>
                     </li>
                     <li class="nav-item auth-user d-none">
-                        <a class="nav-link {% if title == 'Import Data' %}active{% endif %}" href="#">Import Data</a>
+                        <a class="nav-link {% if title == 'Import Data' %}active{% endif %}" href="{{ url_for('import_data_page') }}">Import Data</a>
                     </li>
                     <li class="nav-item auth-user d-none">
                         <a class="nav-link {% if title == 'Account' %}active{% endif %}" href="{{ url_for("account_page") }}">Account</a>
@@ -96,7 +96,7 @@
                 <a class="nav-link text-light {% if title == 'Checkup' %}active{% endif %}" href="{{ url_for('checkup_page') }}"><i class="bi bi-shield-check me-2"></i> Checkup</a>
             </li>
             <li class="nav-item auth-user d-none">
-                <a class="nav-link text-light {% if title == 'Import Data' %}active{% endif %}" href="#"><i class="bi bi-upload me-2"></i> Import Data</a>
+                <a class="nav-link text-light {% if title == 'Import Data' %}active{% endif %}" href="{{ url_for('import_data_page') }}"><i class="bi bi-upload me-2"></i> Import Data</a>
             </li>
             <li class="nav-item auth-user d-none">
                 <hr class="border-light">

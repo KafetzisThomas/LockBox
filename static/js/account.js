@@ -222,7 +222,7 @@ document.getElementById('exportVaultButton').addEventListener('click', async () 
         }
 
         const csvRows = [];
-        csvRows.push(['name', 'username', 'password', 'url', 'notes'].join(','));
+        csvRows.push(['name', 'username', 'password', 'website', 'notes'].join(','));
 
         for (const item of items) {
             const decryptedJson = await decryptVaultItem(vaultKey, item.encrypted_content);

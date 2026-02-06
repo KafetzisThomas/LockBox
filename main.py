@@ -30,16 +30,6 @@ def vault_page(request: Request):
     return templates.TemplateResponse("items/vault.html", {"request": request, "title": "My Vault"})
 
 
-@app.get("/account", include_in_schema=False)
-def account_page(request: Request):
-    return templates.TemplateResponse("users/account.html", {"request": request, "title": "Account"})
-
-
-@app.get("/checkup", include_in_schema=False)
-def checkup_page(request: Request):
-    return templates.TemplateResponse("items/checkup.html", {"request": request, "title": "Checkup"})
-
-
 @app.get("/register", include_in_schema=False)
 def register_page(request: Request):
     return templates.TemplateResponse("users/register.html", {"request": request, "title": "Register"})
@@ -53,3 +43,18 @@ def login_page(request: Request):
 @app.get("/2fa_verification", include_in_schema=False)
 def two_factor_verification_page(request: Request):
     return templates.TemplateResponse("users/2fa_verification.html", {"request": request, "title": "2FA Verification"})
+
+
+@app.get("/checkup", include_in_schema=False)
+def checkup_page(request: Request):
+    return templates.TemplateResponse("items/checkup.html", {"request": request, "title": "Checkup"})
+
+
+@app.get("/import", include_in_schema=False)
+def import_data_page(request: Request):
+    return templates.TemplateResponse("items/import_data.html", {"request": request, "title": "Import Data"})
+
+
+@app.get("/account", include_in_schema=False)
+def account_page(request: Request):
+    return templates.TemplateResponse("users/account.html", {"request": request, "title": "Account"})

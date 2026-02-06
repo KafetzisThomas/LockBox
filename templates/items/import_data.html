@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Import Data{% endblock title %}
+
+{% block content %}
+    <h2>Import Data</h2>
+    <div id="message" class="mt-3 text-center"></div>
+    <form id="importForm" class="w-100 mx-auto mt-4">
+        <div class="mb-3">
+            <label for="csvFile" class="form-label">Select CSV File</label>
+            <input type="file" id="csvFile" class="form-control" accept=".csv" required>
+            <p class="text-muted small mt-2">Import your CSV file with the following columns: <strong>name, username, password, website, notes</strong>.</p>
+        </div>
+        <button type="submit" id="importButton" class="btn btn-primary w-100">Import</button>
+    </form>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/import_data.js"></script>
+{% endblock scripts %}
