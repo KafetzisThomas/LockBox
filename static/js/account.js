@@ -201,6 +201,64 @@ if (twoFactorToggle) {
     });
 }
 
+document.getElementById('exportVaultButton').addEventListener('click', async () => {
+    const vaultKeyJson = sessionStorage.getItem('vault_key');
+    if (!vaultKeyJson) {
+        showMessage("Vault key not found. Please log in again.", "danger", "exportMessage");
+        return;
+    }
+
+    try {
+        const vaultKey = await importVaultKey(JSON.parse(vaultKeyJson));
+        const res = await fetch(`/api/items?user_id=${userId}`);
+        if (!res.ok) {
+            throw new Error("Failed to fetch vault items");
+        }
+
+        const items = await res.json();
+        if (items.length === 0) {
+            showMessage("No items found in your vault to export.", "warning", "exportMessage");
+            return;
+        }
+
+        const csvRows = [];
+        csvRows.push(['name', 'username', 'password', 'url', 'notes'].join(','));
+
+        for (const item of items) {
+            const decryptedJson = await decryptVaultItem(vaultKey, item.encrypted_content);
+            const data = JSON.parse(decryptedJson);
+            const row = [
+                item.name,
+                data.username || '',
+                data.password || '',
+                data.website || '',
+                data.notes || ''
+            ].map(field => {
+                // escape double quotes and wrap in double quotes
+                // https://www.ietf.org/rfc/rfc4180.txt
+                const escaped = ('' + field).replace(/"/g, '""');
+                return `"${escaped}"`;
+            });
+            csvRows.push(row.join(','));
+        }
+
+        const csvContent = csvRows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `lockbox_export_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showMessage("Vault exported successfully!", "success", "exportMessage");
+    } catch (err) {
+        console.error(err);
+        showMessage(err.message, "danger", "exportMessage");
+    }
+});
+
 document.getElementById('confirmDeleteAccount').addEventListener('click', async () => {
     try {
         const res = await fetch(`/api/users/${userId}`, {method: 'DELETE'});
