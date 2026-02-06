@@ -1,6 +1,6 @@
 <div align="center">
-  <h1>LockBox</h1>
-  <p>Self-hosted E2EE password manager for secure online credentials.<br>Written in Python/FastAPI</p>
+  <img src="static/icons/logo.png" width="150" alt="logo icon"/>
+  <p><strong>LockBox: </strong>Self-hosted E2EE password manager for secure online credentials.<br>Written in Python/FastAPI</p>
 </div>
 
 ## What is this
