@@ -39,6 +39,10 @@ master password -> encryption key -> auth key -> server
 vault key -> wrapped with encryption key -> server
 ```
 
+## Database Schema
+
+![Database Schema](/static/icons/lockbox_db_schema.png)
+
 ## Usage
 
 ### Install uv
