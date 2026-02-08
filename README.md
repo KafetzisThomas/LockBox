@@ -52,6 +52,13 @@ cd path/to/root/directory
 pip install uv
 ```
 
+### Configure environment variables
+
+```bash
+mv .env.example .env
+nano .env  # modify file, instructions inside
+```
+
 ### Web API Server
 
 ```bash
