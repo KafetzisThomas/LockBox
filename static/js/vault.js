@@ -122,6 +122,19 @@ async function openEditModal(item) {
     document.getElementById('editPassword').value = "...";
     document.getElementById('editWebsite').value = "...";
     document.getElementById('editNotes').value = "...";
+
+    const dateAdded = document.getElementById('editDateAdded');
+    if (item.date_added) {
+        const dateObj = new Date(item.date_added);
+        dateAdded.textContent = `Date added: ${dateObj.toLocaleString()}`;
+    }
+
+    const lastModified = document.getElementById('editLastModified');
+    if (item.last_modified) {
+        const dateObj = new Date(item.last_modified);
+        lastModified.textContent = `Last modified: ${dateObj.toLocaleString()}`;
+    }
+
     getModal('#editModal').show();
 
     try {

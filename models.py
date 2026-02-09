@@ -27,4 +27,7 @@ class Item(Base):
     encrypted_content: Mapped[str] = mapped_column(Text, nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
     date_added: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    last_modified: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc)
+    )
     user: Mapped["User"] = relationship(back_populates="items")

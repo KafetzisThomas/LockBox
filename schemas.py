@@ -61,5 +61,6 @@ class ItemResponse(ItemBase):
     id: int
     user_id: int
     date_added: datetime
+    last_modified: datetime
 
     model_config = ConfigDict(from_attributes=True)
