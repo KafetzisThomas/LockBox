@@ -67,6 +67,20 @@ uv run fastapi dev main.py
 
 Access web app at `http://127.0.0.1:8000` or `http://localhost:8000`.
 
+## Demo Images
+
+![Vault](/static/icons/vault.png)
+
+![New Item](/static/icons/new_item.png)
+
+![Edit Item](/static/icons/edit_item.png)
+
+![Password Checkup](/static/icons/password_checkup.png)
+
+![Account](/static/icons/account.png)
+
+![Import Data](/static/icons/import_data.png)
+
 ## Contributing Guidelines
 
 ### Pull Requests
