@@ -45,11 +45,13 @@ vault key -> wrapped with encryption key -> server
 
 ## Usage
 
-### Install uv
+### Install uv and project tools
 
 ```bash
 cd path/to/root/directory
 pip install uv
+uv sync
+uv sync --extra dev  # for devs only
 ```
 
 ### Configure environment variables
