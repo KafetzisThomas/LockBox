@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List, Optional
-from schemas import UserCreate, UserResponse, UserEmailUpdate, UserMasterPasswordUpdate, User2FAUpdate, User2FAVerify
-from models import User
-from database import get_db
+from ..schemas import UserCreate, UserResponse, UserEmailUpdate, UserMasterPasswordUpdate, User2FAUpdate, User2FAVerify
+from ..models import User
+from ..database import get_db
 import pyotp
 
 router = APIRouter()
