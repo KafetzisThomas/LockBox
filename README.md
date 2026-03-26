@@ -15,7 +15,7 @@ While its predecessor PassManagerWeb derived master keys without storing them in
 
 You can compare the cryptographic implementations here:
 
-- **LockBox**: https://github.com/KafetzisThomas/LockBox/blob/main/static/js/crypto.js
+- **LockBox**: https://github.com/KafetzisThomas/LockBox/blob/main/app/static/js/crypto.js
 - **PassManagerWeb**: https://github.com/KafetzisThomas/PassManagerWeb/blob/main/passmanager/models.py
 
 ## Features
@@ -59,7 +59,7 @@ uv sync --extra dev  # for devs only
 Run the web API server:
 
 ```bash
-uv run fastapi dev main.py
+uv run fastapi dev app/main.py
 ```
 
 Access web app at `http://127.0.0.1:8000` or `http://localhost:8000`.
