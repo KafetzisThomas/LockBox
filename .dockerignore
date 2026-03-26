@@ -1,0 +1,17 @@
+# Environments
+.venv/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local Database
+lockbox.db
+lockbox.db-journal
+
+# Git
+.git/
+.gitignore

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="static/icons/logo.png" width="150" alt="logo icon"/>
+  <img src="app/static/icons/logo.png" width="150" alt="logo icon"/>
   <p><strong>LockBox: </strong>Self-hosted E2EE password manager for secure online credentials.<br>Written in Python/FastAPI</p>
 </div>
 
@@ -41,11 +41,13 @@ vault key -> wrapped with encryption key -> server
 
 ## Database Schema
 
-![Database Schema](/static/icons/lockbox_db_schema.png)
+![Database Schema](/app/static/icons/lockbox_db_schema.png)
 
 ## Usage
 
-### Install uv and project tools
+### Local Development
+
+First install `uv` and sync the project dependencies:
 
 ```bash
 cd path/to/root/directory
@@ -54,14 +56,7 @@ uv sync
 uv sync --extra dev  # for devs only
 ```
 
-### Configure environment variables
-
-```bash
-mv .env.example .env
-nano .env  # modify file, instructions inside
-```
-
-### Web API Server
+Run the web API server:
 
 ```bash
 uv run fastapi dev main.py
@@ -69,19 +64,34 @@ uv run fastapi dev main.py
 
 Access web app at `http://127.0.0.1:8000` or `http://localhost:8000`.
 
+### Production Deployment (Docker)
+
+Set up your environment variables:
+
+```bash
+cp .env.example .env
+nano .env  # modify file, instructions inside
+```
+
+Build and start the container in the background:
+
+```bash
+docker compose up -d --build
+```
+
 ## Demo Images
 
-![Vault](/static/icons/vault.png)
+![Vault](/app/static/icons/vault.png)
 
-![New Item](/static/icons/new_item.png)
+![New Item](/app/static/icons/new_item.png)
 
-![Edit Item](/static/icons/edit_item.png)
+![Edit Item](/app/static/icons/edit_item.png)
 
-![Password Checkup](/static/icons/password_checkup.png)
+![Password Checkup](/app/static/icons/password_checkup.png)
 
-![Account](/static/icons/account.png)
+![Account](/app/static/icons/account.png)
 
-![Import Data](/static/icons/import_data.png)
+![Import Data](/app/static/icons/import_data.png)
 
 ## Contributing Guidelines
 
