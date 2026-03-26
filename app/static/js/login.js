@@ -21,7 +21,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const users = await response.json();
 
         if (users.length === 0) {
-            showMessage("User not found.", "danger");
+            showMessage("Incorrect email or master password.", "danger");
             return;
         }
         const user = users[0];
@@ -34,7 +34,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         // verify auth hash
         const calculatedHash = await deriveAuthHash(passwordKey);
         if (calculatedHash !== user.auth_hash) {
-            throw new Error("Incorrect password");
+            throw new Error("Incorrect email or master password.");
         }
 
         const vaultKey = await unwrapVaultKey(user.wrapped_key, passwordKey);
